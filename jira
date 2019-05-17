@@ -34,7 +34,10 @@
     #dashboard-content>.aui-page-header,#dashboard>.tabs.vertical, .layout.layout-aa { ${bgl} ${txt}}
     .google-visualization-table-th, .google-visualization-table-td, .google-visualization-table .gradient { ${noimg} ${bgl} }
     .google-visualization-table-tr-odd .google-visualization-table-td, .google-visualization-table-tr-odd .google-visualization-table-th { ${bg} }
-    `
+	.quick-search-result-group { ${bgl} ${fg} ${bo} position: absolute; left: -250px; width: 500px; }
+    .quick-search-no-results, .quick-search-subtitle-container { ${fg} }
+    .details-layout .split-view .list-results-panel .count-pagination, .aui-page-header, .aui-page-header-actions {${bg}}
+        `
     //END PATCHES TO MAKE THE THEME WORK WITH MINDARC
 
     //START USERSCRIPT DEFAULTS
@@ -1032,8 +1035,10 @@
         if (ele.media == "screen")
         {
             ele.media = "print"
-        } else {
+			GM_setValue('cronk',true);
+		} else {
             ele.media = "screen"
+			GM_setValue('cronk',false);
         }
     }
 
@@ -1041,10 +1046,18 @@
 
     let toggler = document.createElement("input")
     toggler.type = 'button'
-    toggler.style = 'position:absolute; bottom: 10px; right: 20px; width: 30px; height:30px; border-radius:50%; background-color:#4B97F8 !important;'
+    toggler.style = 'position:fixed; bottom: 10px; right: 20px; width: 30px; height:30px; border-radius:50%; background-color:#4B97F8 !important; font-weight:1000'
     toggler.class = 'aui-button aui-button-primary aui-style create-issue'
+	toggler.value = 'A'
     toggler.addEventListener('click', toggle_func)
 
     setTimeout( ()=>document.body.appendChild(toggler), 2500 )
 
+    //LOCAL STORAGE STUFFS
+    let cronk = GM_getValue('cronk')
+
+    if (cronk)
+    {
+         toggle_func()
+    }
 })();
