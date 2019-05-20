@@ -17,7 +17,7 @@
     let bgl = 'background: #41454D !important;'
     let fg = 'color: #EBEBEB !important;'
     let bo = 'border-color: #3C414C !important; border: 1px solid #3C414C !important;'
-    let txt = 'font-size: 15px !important; line-height: 1.5em !important; font-family: "Open Sans"';
+    let txt = 'font-size: 15px !important; line-height: 1.5em !important; font-family: "Exo 2","Open Sans"';
     let space = 'margin: 1.25em 0'
     let intspace = 'padding: 1.25em; border:'
     let link = 'color: #4B97F8 !important;'
@@ -28,7 +28,10 @@
     let additional_custom =
     `
     @import url('https://fonts.googleapis.com/css?family=Open+Sans');
-    .aui-dropdown2.aui-style-default:hover .aui-dropdown2-checkbox:not(.aui-dropdown2-disabled):hover, .aui-dropdown2.aui-style-default:hover .aui-dropdown2-radio:not(.aui-dropdown2-disabled):hover, .aui-dropdown2.aui-style-default:hover a:not(.aui-dropdown2-disabled):hover { ${bgl} ${fg} }
+	@import url('https://fonts.googleapis.com/css?family=Exo+2&display=swap')
+	.aui-dropdown2, aui-dropdown2-section { ${bg} }
+	.aui-dropdown2, aui-dropdown2-section, a:hover { ${bg} }
+	.aui-dropdown2.aui-style-default:hover a:not(.aui-dropdown2-disabled):hover { ${bgl} }
     body { ${txt} }
     p { ${space} }
     .issue-data-block, .issue-data-block:hover { ${intspace} ${bo} }
@@ -36,9 +39,14 @@
     #dashboard-content>.aui-page-header,#dashboard>.tabs.vertical, .layout.layout-aa { ${bgl} ${txt}}
     .google-visualization-table-th, .google-visualization-table-td, .google-visualization-table .gradient { ${noimg} ${bgl} }
     .google-visualization-table-tr-odd .google-visualization-table-td, .google-visualization-table-tr-odd .google-visualization-table-th { ${bg} }
-    .quick-search-result-group { ${bgl} ${fg} ${bo} position: absolute; left: -250px; width: 500px; }
+    .quicksearch-dropdown { ${bgl} ${fg} ${bo} position: absolute; left: -250px !important; width: 500px !important; }
+	.atlassian-autocomplete .suggestions { max-width: 100% !important; }
     .quick-search-no-results, .quick-search-subtitle-container { ${fg} }
-    .details-layout .split-view .list-results-panel .count-pagination, .aui-page-header, .aui-page-header-actions {${bg}}
+    .atlassian-autocomplete .suggestions, .details-layout .split-view .list-results-panel .count-pagination, .aui-page-header, .aui-page-header-actions, .navigator-sidebar {${bg} ${fg}}
+	.atlassian-autocomplete .suggestions li {${bgl} ${fg} }
+	.atlassian-autocomplete .suggestions li.active ,.icon-container.icon-container.quick-search-active, .aui-navgroup~.aui-page-panel .aui-page-panel-nav, .aui-sidebar~.aui-page-panel .aui-page-panel-nav, .aui-page-header~.aui-page-panel .aui-page-panel-nav{${bg}}
+    .content-container, .tempo-timesheet #issuetable .issuerow:hover td, #issuetable, .issue-table , #issuetable>tbody>tr, .issue-table>tbody>tr, #issuetable>tfoot>tr, .issue-table>tfoot>tr { ${bg} ${fg} }
+    .tempo-timesheet #issuetable thead tr.rowHeader th, .tempo-timesheet #issuetable td.tt-nonworking-days, .tempo-calendar #issuetable td.tt-nonworking-days { ${bgl} ${fg} }
     `
     //END PATCHES TO MAKE THE THEME WORK WITH MINDARC
 
