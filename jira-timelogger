@@ -1,0 +1,85 @@
+// ==UserScript==
+// @name         JIRA time logger button script
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  15minute button
+// @author       Kaic
+// @match        http://jira.mindarc.com.au:8080/*
+// @grant          GM_xmlhttpRequest
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+
+    let month = new Array();
+    month[0] = "JAN";
+    month[1] = "FEB";
+    month[2] = "MAR";
+    month[3] = "APR";
+    month[4] = "MAY";
+    month[5] = "JUN";
+    month[6] = "JUL";
+    month[7] = "AUG";
+    month[8] = "SEP";
+    month[9] = "OCT";
+    month[10] = "NOV";
+    month[11] = "DEC";
+
+    const user = document.getElementsByName("ajs-remote-user")[0].content
+    const base_url = document.getElementsByName("ajs-jira-base-url")[0].content
+    const cat_url = "rest/tempo-rest/1.0/worklogs/"
+    const ticket = document.getElementsByName("ajs-issue-key")[0].content
+
+    let ajax_url = base_url + "/" + cat_url + ticket
+
+    let dao = new Date();
+    let dao_iso = dao.getFullYear() + "-" + (dao.getMonth()+1) + "-" + dao.getDate()
+    let dao_au = dao.getDate() + "/" + month[dao.getMonth()] + dao.getFullYear()
+
+
+    let payload = {
+        type: "issue",
+        ansidate: dao_iso,
+        ansienddate: dao_iso,
+        startTimeEnabled: false,
+        actionType: "logTime",
+        preSelectedIssue: ticket,
+        planning: false,
+        selectedUser: user,
+        issue: ticket,
+        date: dao_au,
+        enddate: dao_au,
+        time: "15m",
+        comment: "Worked for 15 minutes"
+    }
+
+    let urlParameters = Object.entries(payload).map(e => e.join('=')).join('&');
+
+    const loggle_func = () => {
+    GM_xmlhttpRequest({
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        },
+        url: ajax_url,
+        data: urlParameters,
+        onload: function(response) {
+             console.log(response)
+            JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
+        }
+    });
+    }
+
+    let toggler = document.createElement("input")
+    toggler.type = 'button'
+    toggler.style = 'position:fixed; bottom: 50px; right: 20px; width: 50px; height:50px; border-radius:50%; background-color:#4B97F8 !important; font-weight:1000'
+    toggler.class = 'aui-button aui-button-primary aui-style create-issue'
+    toggler.value = 'LOG'
+    toggler.addEventListener('click', loggle_func)
+
+    setTimeout( ()=>document.body.appendChild(toggler), 2500 )
+
+
+    console.log("meg"+ajax_url)
+})();
