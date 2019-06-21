@@ -1,0 +1,101 @@
+// ==UserScript==
+// @name         JIRA quick reply button script
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Quick reply button
+// @author       Kaic
+// @match        http://jira.mindarc.com.au:8080/browse/*
+// @grant          GM_xmlhttpRequest
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    //edit targets here
+    const default_text = 'Hello %placeholder% \n\nJust an update on this ticket:\n\n\ncc %ccplaceholder%'
+    //end edit
+
+
+    let loggle_func = function() {
+        let u = document.getElementById('peoplemodule').getElementsByClassName('user-hover')
+        let y = document.getElementById('issue_actions_container').getElementsByClassName('user-hover')
+        let newu = ''
+        let newy = ''
+        let current_user = JIRA.Users.LoggedInUser.userName()
+
+        let last_comment = document.getElementsByClassName('activity-comment')[document.getElementsByClassName('activity-comment').length-1]
+        let last_comment_text = last_comment.getElementsByClassName('action-body')
+        let last_comment_user = last_comment.getElementsByClassName('action-details')[0].getElementsByClassName('user-hover')
+
+        let last_comment_text_string = last_comment_text[0].innerText
+        if ( last_comment_text_string.substring(0,100).search(current_user) )
+        {
+           newu += " [~"+last_comment_user[0].getAttribute('rel')+"]"
+        }
+
+        for( let i=0; i < u.length; i++ )
+        {
+            let user = u[i].getAttribute('rel')
+            if (current_user == user)
+                continue
+            if (newu.search(user) == -1) {
+                newu += " [~" + user + "]"
+            }
+        }
+
+        for( let i=0; i < y.length; i++ )
+        {
+            let user = y[i].getAttribute('rel')
+            if (current_user == user)
+                continue
+            if (newy.search(user) == -1 && newu.search(user) == -1) {
+                newy += " [~" + user + "]"
+            }
+        }
+
+        let newstring = default_text.replace('%placeholder%', newu)
+        newstring = newstring.replace('%ccplaceholder%', newy)
+
+        document.getElementById('addcomment').getElementsByClassName('mod-content')[0].style.display = 'block'
+        document.getElementById('footer-comment-button').click()
+        let inert = document.getElementById('comment-wiki-edit').getElementsByClassName('wiki-textfield')[0].value
+        if (inert.trim() == "")
+        {
+            document.getElementById('comment-wiki-edit').getElementsByClassName('wiki-textfield')[0].value = newstring
+            setCaretPosition(document.getElementById('comment-wiki-edit').getElementsByClassName('wiki-textfield')[0], 58)
+        } else {
+            alert('Clear comment box before replying again.')
+        }
+
+        document.getElementById('comment-wiki-edit').getElementsByClassName('wiki-textfield')[0].focus().scrollIntoView()
+    }
+
+    let toggler = document.createElement("input")
+    toggler.type = 'button'
+    toggler.style = 'position:fixed; bottom: 50px; right: 70px; width: 50px; height:50px; border-radius:50%; background-color:#4B97F8 !important; font-weight:1000'
+    toggler.class = 'aui-button aui-button-primary aui-style create-issue'
+    toggler.value = 'REP'
+    toggler.addEventListener('click', loggle_func)
+
+    setTimeout( ()=>document.body.appendChild(toggler), 2500 )
+
+
+    function setCaretPosition(elem, caretPos) {
+        if(elem != null) {
+            if(elem.createTextRange) {
+                var range = elem.createTextRange();
+                range.move('character', caretPos);
+                range.select();
+            }
+            else {
+                if(elem.selectionStart) {
+                    elem.focus();
+                    elem.setSelectionRange(caretPos, caretPos);
+                }
+                else
+                    elem.focus();
+            }
+        }
+    }
+
+})();
